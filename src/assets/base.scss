@@ -1,0 +1,91 @@
+@import 'util.scss';
+
+// import bootstrap
+@import "bootstrap/bootstrap.scss";
+
+
+label {
+  margin-bottom: 0;
+}
+
+body {
+  overflow-x: auto;
+}
+
+
+html, body,
+#root {
+  height: 100%;
+}
+
+.clickable {
+  cursor: pointer !important;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+.subheader {
+  margin-top: -0.4rem; // undo h1 margins (0.5rem)
+}
+
+.code-block {
+  padding: 1em;
+  background: theme-color('light');
+  border-radius: $border-radius;
+}
+
+// Bootstrap Overrides
+.navbar-expand-md .navbar-nav .nav-link {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@mixin button-custom-variant($background, $border: darken($background, 10%)) {
+  cursor: pointer;
+  border-top-width: 0;
+  border-color: $border;
+  border-bottom-width: 3px;
+  border-left-width: 1px;
+  border-right-width: 1px;
+
+  &:active,
+  &.active,
+  .show > &.dropdown-toggle {
+    border-bottom-width: 1px;
+    border-top-width: 2px;
+    border-top-color: darken($border, 3%);
+  }
+}
+
+
+// theme color additions
+@each $color, $value in $theme-colors {
+  // buttons
+  .btn.btn-#{$color} {
+    @include button-custom-variant($value);
+  }
+
+  .btn.btn-pale-#{$color} {
+    $pale-value: pale-color($value);
+    @include button-variant($pale-value, $pale-value);
+    @include button-custom-variant($pale-value, darken($pale-value, 10%));
+
+    &.with-color-text {
+      color: pale-text-color($value) !important;
+    }
+  }
+}
+
+@each $color, $value in $pale-colors {
+  $pale-value: pale-color($value);
+
+  .bg-pale-#{$color} {
+    background: $pale-value !important;
+  }
+}
+
+.text-container {
+  max-width: 600px;
+}

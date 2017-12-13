@@ -1,0 +1,14 @@
+/* Simple file to include in component SCSS to get access to
+ * variables and mixins */
+.App {
+  margin-top: 80px; }
+  .App .main-nav.navbar {
+    background-color: #272F3B;
+    color: #fff; }
+  .App .upload-box {
+    background: #e9ecef;
+    padding: 2em;
+    border-right: 1px solid #fff;
+    border-bottom: 1px solid #fff; }
+    .App .upload-box h4 {
+      margin-bottom: 0.6em; }

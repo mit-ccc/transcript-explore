@@ -1,0 +1,21 @@
+@import 'assets/util.scss';
+
+.App {
+  margin-top: 80px; // nav
+
+  .main-nav.navbar {
+    background-color: $cortico-dark-blue;
+    color: #fff;
+  }
+
+  .upload-box {
+    background: $gray-200;
+    padding: 2em;
+    border-right: 1px solid #fff;
+    border-bottom: 1px solid #fff;
+
+    h4 {
+      margin-bottom: 0.6em;
+    }
+  }
+}

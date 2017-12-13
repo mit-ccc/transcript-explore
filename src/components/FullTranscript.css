@@ -1,0 +1,13 @@
+/* Simple file to include in component SCSS to get access to
+ * variables and mixins */
+.FullTranscript .TranscriptSegment {
+  margin-bottom: 1em; }
+  .FullTranscript .TranscriptSegment .segment-time {
+    font-size: 0.8em;
+    color: #adb5bd;
+    display: block; }
+
+.FullTranscript .TranscriptWord {
+  cursor: pointer; }
+  .FullTranscript .TranscriptWord:hover {
+    text-decoration: underline; }

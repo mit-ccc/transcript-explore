@@ -1,0 +1,21 @@
+@import 'assets/util.scss';
+
+.FullTranscript {
+  .TranscriptSegment {
+    margin-bottom: 1em;
+
+    .segment-time {
+      font-size: 0.8em;
+      color: $gray-500;
+      display: block;
+    }
+  }
+
+  .TranscriptWord {
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

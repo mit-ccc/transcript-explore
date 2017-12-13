@@ -1,0 +1,103 @@
+/* Simple file to include in component SCSS to get access to
+ * variables and mixins */
+
+// Core variables and mixins
+@import "bootstrap/functions";
+@import "bootstrap/variables";
+@import "bootstrap/mixins";
+
+// tint taken from Bourbon
+@function tint(
+  $color,
+  $percent
+) {
+  @if not _is-color($color) {
+    @error "`#{$color}` is not a valid color for the `$color` argument in " +
+           "the `tint` mixin.";
+  } @else {
+    @return mix(#fff, $color, $percent);
+  }
+}
+
+@function pale-color($color) {
+  @return tint($color, 90%);
+}
+
+@function pale-border-color($color) {
+  @return tint(desaturate($color, 30%), 50%);
+}
+
+@function pale-text-color($color) {
+  @return desaturate($color, 50%)
+}
+
+
+// Bootstrap Overrides
+$font-family-base: 'proxima-nova', Proxima Nova, $font-family-sans-serif;
+$cortico-dark-blue: #272F3B;
+$btn-transition: background .15s ease-in-out, box-shadow .15s ease-in-out;
+
+
+$colors: (
+  blue: $blue,
+  indigo: $indigo,
+  purple: $purple,
+  pink: $pink,
+  red: $red,
+  orange: $orange,
+  yellow: $yellow,
+  green: $green,
+  teal: $teal,
+  cyan: $cyan,
+  white: $white,
+  gray: $gray-600,
+  gray-dark: $gray-800,
+);
+
+$theme-colors: (
+  primary: $blue,
+  secondary: $gray-200,
+  success: $green,
+  info: $cyan,
+  warning: $yellow,
+  danger: $red,
+  light: $gray-100,
+  dark: $gray-800,
+  darker: rgba(0, 0, 0, 0.045),
+  lighter: rgba(255, 255, 255, 0.045),
+  blue: $blue,
+  indigo: $indigo,
+  purple: $purple,
+  pink: $pink,
+  red: $red,
+  orange: $orange,
+  yellow: $yellow,
+  green: $green,
+  teal: $teal,
+  cyan: $cyan,
+  gray: $gray-400,
+  darker-gray: $gray-600
+);
+
+$pale-colors: (
+  blue: $blue,
+  indigo: $indigo,
+  purple: $purple,
+  pink: $pink,
+  red: $red,
+  orange: $orange,
+  yellow: $yellow,
+  green: $green,
+  teal: $teal,
+  cyan: $cyan,
+  gray: $gray-500,
+);
+
+
+// headers
+$h1-font-size: 2.2rem;
+$h2-font-size: 1.8rem;
+$h3-font-size: 1.5rem;
+$h4-font-size: 1.35rem;
+$h5-font-size: 1.2rem;
+$h6-font-size: 1rem;
