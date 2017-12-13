@@ -10,12 +10,29 @@
   cursor: default; }
   .TranscriptTopTerms .TopTerm:hover {
     background: #dee2e6; }
+    .TranscriptTopTerms .TopTerm:hover .term-timeplot {
+      z-index: 3; }
   .TranscriptTopTerms .TopTerm .term-freq {
     margin-left: 0.4em;
     font-size: 0.85em;
     opacity: 0.5; }
   .TranscriptTopTerms .TopTerm:after {
     content: ' '; }
+  .TranscriptTopTerms .TopTerm .term-timeplot {
+    line-height: 0;
+    height: 5px;
+    background: rgba(0, 0, 0, 0.04);
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1; }
+    .TranscriptTopTerms .TopTerm .term-timeplot .term-timeplot-point {
+      position: absolute;
+      top: 0px;
+      height: 5px;
+      width: 2px;
+      background: rgba(0, 0, 0, 0.2); }
   .TranscriptTopTerms .TopTerm .term-timestamps {
     font-size: 0.85em;
     position: absolute;

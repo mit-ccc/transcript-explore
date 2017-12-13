@@ -24,7 +24,11 @@ export function readTranscriptFromTsv(tsv) {
 
   const segments = discoverSegmentsFromWords(words);
 
-  const transcript = { words, segments };
+  const transcript = {
+    words,
+    segments,
+    duration: words[words.length - 1].endTime,
+  };
   console.log('Read transcript', transcript);
   return transcript;
 }

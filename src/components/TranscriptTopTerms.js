@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import * as d3 from 'd3';
 
 import { topTermsFromTranscript, formatTime } from '../util';
 
@@ -19,7 +20,12 @@ class TranscriptTopTerms extends Component {
     return (
       <div className="TranscriptTopTerms">
         {filteredTopTerms.map(term => (
-          <TopTerm term={term} key={term.key} onSeekTime={onSeekTime} />
+          <TopTerm
+            duration={transcript.duration}
+            term={term}
+            key={term.key}
+            onSeekTime={onSeekTime}
+          />
         ))}
       </div>
     );
@@ -74,6 +80,23 @@ class TopTerm extends Component {
     );
   }
 
+  renderTimePlot() {
+    const { term, duration } = this.props;
+    const scale = d3
+      .scaleLinear()
+      .domain([0, duration])
+      .range([0, 100])
+      .clamp(true);
+    return (
+      <div className="term-timeplot">
+        {term.values.map((word, i) => {
+          const style = { left: `${scale(word.time)}%` };
+          return <div key={i} className="term-timeplot-point" style={style} />;
+        })}
+      </div>
+    );
+  }
+
   render() {
     const { term } = this.props;
 
@@ -85,6 +108,7 @@ class TopTerm extends Component {
       >
         <span className="term-string">{term.key}</span>
         <span className="term-freq">{term.values.length}</span>
+        {this.renderTimePlot()}
         {this.renderTimestamps()}
       </span>
     );

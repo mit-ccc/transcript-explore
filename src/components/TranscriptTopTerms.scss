@@ -11,6 +11,10 @@
 
     &:hover {
       background: $gray-300;
+
+      .term-timeplot {
+        z-index: 3;
+      }
     }
 
     .term-freq {
@@ -21,6 +25,26 @@
 
     &:after {
       content: ' ';
+    }
+
+    .term-timeplot {
+      line-height: 0;
+      height: 5px;
+      background: rgba(0, 0, 0, 0.04);
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 1;
+
+      .term-timeplot-point {
+        position: absolute;
+        top: 0px;
+        height: 5px;
+        width: 2px;
+        // border-radius: 50%;
+        background: rgba(0, 0, 0, 0.2);
+      }
     }
 
     .term-timestamps {
