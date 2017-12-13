@@ -20,6 +20,8 @@ export function readTranscriptFromTsv(tsv) {
     stopword: stopwordMap[d[0].toLowerCase()] != null,
   }));
 
+  addConcordance(words);
+
   const segments = discoverSegmentsFromWords(words);
 
   const transcript = { words, segments };
@@ -63,6 +65,40 @@ function discoverSegmentsFromWords(words) {
   return segments;
 }
 
+function addConcordance(words) {
+  const numWords = 5; // before and after
+  const numBefore = numWords;
+  const numAfter = numWords;
+
+  words.forEach((word, i) => {
+    let beforeWordIndex = Math.max(0, i - numBefore);
+    let afterWordIndex = Math.min(i + 1, words.length - 1);
+    let beforeWords = [];
+    let afterWords = [];
+
+    while (beforeWordIndex < i) {
+      beforeWords.push(words[beforeWordIndex].string);
+      beforeWordIndex += 1;
+    }
+
+    while (
+      afterWordIndex > i &&
+      afterWordIndex <= Math.min(i + numAfter, words.length - 1)
+    ) {
+      afterWords.push(words[afterWordIndex].string);
+      afterWordIndex += 1;
+    }
+
+    word.concordance = {
+      before: beforeWords,
+      after: afterWords,
+      string: [...beforeWords, word.string, ...afterWords].join(' '),
+    };
+  });
+
+  return words;
+}
+
 export function leftPad(num) {
   if (num < 10) {
     return `0${num}`;
@@ -81,7 +117,8 @@ export function formatTime(time) {
     parts.unshift(hours);
   }
 
-  return parts.map(leftPad).join(':');
+  // don't leftpad biggest number
+  return parts.map((d, i) => (i > 0 ? leftPad(d) : d)).join(':');
 }
 
 /**

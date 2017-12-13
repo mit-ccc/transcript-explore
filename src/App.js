@@ -117,7 +117,7 @@ class App extends Component {
 
   renderNav() {
     return (
-      <Navbar className="main-nav" dark color="dark" expand="md" fixed="top">
+      <Navbar className="main-nav" color="dark" expand="md" fixed="top">
         <Container>
           <NavbarBrand tag="span" className="mr-4">
             Transcript Explorer

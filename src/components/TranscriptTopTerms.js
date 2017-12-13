@@ -61,7 +61,12 @@ class TopTerm extends Component {
               className="term-timestamp"
               onClick={() => onSeekTime(word.time)}
             >
-              {time}
+              <span className="timestamp-time">{time}</span>
+              <span className="timestamp-preview">
+                {word.concordance.before.join(' ') + ' '}
+                <b>{word.string}</b>
+                {' ' + word.concordance.after.join(' ')}
+              </span>
             </span>
           );
         })}

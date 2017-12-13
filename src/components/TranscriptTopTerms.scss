@@ -30,6 +30,7 @@
       left: 0;
       padding: 0.3em 0.6em;
       z-index: 2;
+      white-space: nowrap;
 
       .term-timestamp {
         padding: 0.2em 0.4em;
@@ -39,7 +40,20 @@
         display: block;
 
         &:hover {
-          text-decoration: underline;
+          .timestamp-time {
+            text-decoration: underline;
+          }
+        }
+
+        .timestamp-time {
+          display: inline-block;
+          min-width: 40px;
+          text-align: right;
+        }
+
+        .timestamp-preview {
+          margin-left: 1em;
+          color: $black;
         }
       }
     }

@@ -22,12 +22,20 @@
     background: #dee2e6;
     left: 0;
     padding: 0.3em 0.6em;
-    z-index: 2; }
+    z-index: 2;
+    white-space: nowrap; }
     .TranscriptTopTerms .TopTerm .term-timestamps .term-timestamp {
       padding: 0.2em 0.4em;
       margin-right: 2px;
       color: #007bff;
       cursor: pointer;
       display: block; }
-      .TranscriptTopTerms .TopTerm .term-timestamps .term-timestamp:hover {
+      .TranscriptTopTerms .TopTerm .term-timestamps .term-timestamp:hover .timestamp-time {
         text-decoration: underline; }
+      .TranscriptTopTerms .TopTerm .term-timestamps .term-timestamp .timestamp-time {
+        display: inline-block;
+        min-width: 40px;
+        text-align: right; }
+      .TranscriptTopTerms .TopTerm .term-timestamps .term-timestamp .timestamp-preview {
+        margin-left: 1em;
+        color: #000; }
