@@ -2,6 +2,7 @@
   "name": "transcript-explore",
   "version": "0.1.0",
   "private": true,
+  "homepage": "http://prototypes.cortico.ai/transcript-explore",
   "dependencies": {
     "d3": "^4.12.0",
     "node-sass-chokidar": "^0.0.3",
@@ -21,7 +22,8 @@
     "build-css": "node-sass-chokidar --include-path ./src --include-path ./node_modules src/ -o src/",
     "watch-css": "npm run build-css && node-sass-chokidar --include-path ./src --include-path ./node_modules src/ -o src/ --watch --recursive",
     "start-js": "react-scripts start",
-    "prettier": "prettier --single-quote --trailing-comma \"es5\" --write \"src/**/*.{js,jsx}\""
+    "prettier": "prettier --single-quote --trailing-comma \"es5\" --write \"src/**/*.{js,jsx}\"",
+    "deploy": "rsync -ruvz --delete build/ prototypes:/lsm/cortico-prototypes/transcript-explore/"
   },
   "devDependencies": {
     "prettier": "1.9.2"
