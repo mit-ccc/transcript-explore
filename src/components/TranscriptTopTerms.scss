@@ -1,0 +1,47 @@
+@import 'assets/util.scss';
+.TranscriptTopTerms {
+  .TopTerm {
+    display: inline-block;
+    padding: 0.3em 0.6em;
+    background: $gray-200;
+    margin-right: 4px;
+    margin-bottom: 4px;
+    position: relative;
+    cursor: default;
+
+    &:hover {
+      background: $gray-300;
+    }
+
+    .term-freq {
+      margin-left: 0.4em;
+      font-size: 0.85em;
+      opacity: 0.5;
+    }
+
+    &:after {
+      content: ' ';
+    }
+
+    .term-timestamps {
+      font-size: 0.85em;
+      position: absolute;
+      background: $gray-300;
+      left: 0;
+      padding: 0.3em 0.6em;
+      z-index: 2;
+
+      .term-timestamp {
+        padding: 0.2em 0.4em;
+        margin-right: 2px;
+        color: theme-color(primary);
+        cursor: pointer;
+        display: block;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+}

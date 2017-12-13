@@ -1,37 +1,10 @@
 import React, { Component } from 'react';
 
+import { formatTime } from '../util';
+
 import './FullTranscript.css';
 
-function leftPad(num) {
-  if (num < 10) {
-    return `0${num}`;
-  }
-
-  return `${num}`;
-}
-
-function formatTime(time) {
-  const hours = Math.floor(time / (60 * 60));
-  const minutes = Math.floor((time % (60 * 60)) / 60);
-  const seconds = Math.floor(time % 60);
-
-  const parts = [minutes, seconds];
-  if (hours > 0) {
-    parts.unshift(hours);
-  }
-
-  return parts.map(leftPad).join(':');
-}
-
 class FullTranscript extends Component {
-  state = {
-    tsvFileContents: null,
-    tsvFilename: null,
-    transcript: null,
-    soundFileContents: null,
-    soundFilename: null,
-  };
-
   render() {
     const { transcript, onSelectWord } = this.props;
 

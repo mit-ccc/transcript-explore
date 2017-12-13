@@ -5,6 +5,7 @@ import ReactAudioPlayer from 'react-audio-player';
 import { Navbar, NavbarBrand, Nav, NavItem } from 'reactstrap';
 import { readTranscriptFromTsv } from './util';
 import FullTranscript from './components/FullTranscript';
+import TranscriptTopTerms from './components/TranscriptTopTerms';
 
 import './App.css';
 
@@ -79,16 +80,18 @@ class App extends Component {
   renderTranscript() {
     const { transcript } = this.state;
 
+    if (!transcript) {
+      return null;
+    }
+
     return (
-      <div className="text-container">
+      <div className="text-container mb-4">
         <h5>Full Transcript</h5>
-        {!transcript && <p>Please upload a transcript file.</p>}
-        {transcript && (
-          <FullTranscript
-            transcript={transcript}
-            onSelectWord={this.handleSeekToWord}
-          />
-        )}
+
+        <FullTranscript
+          transcript={transcript}
+          onSelectWord={this.handleSeekToWord}
+        />
       </div>
     );
   }
@@ -127,12 +130,31 @@ class App extends Component {
     );
   }
 
+  renderTopTerms() {
+    const { transcript } = this.state;
+
+    if (!transcript) {
+      return null;
+    }
+
+    return (
+      <div className="mb-4">
+        <h5>Top Terms</h5>
+        <TranscriptTopTerms
+          transcript={transcript}
+          onSeekTime={this.handleSeekAudio}
+        />
+      </div>
+    );
+  }
+
   render() {
     return (
       <div className="App">
         {this.renderNav()}
         <Container>
           {this.renderFileInputs()}
+          {this.renderTopTerms()}
           {this.renderTranscript()}
         </Container>
       </div>

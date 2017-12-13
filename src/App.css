@@ -1,7 +1,7 @@
 /* Simple file to include in component SCSS to get access to
  * variables and mixins */
 .App {
-  margin-top: 80px; }
+  padding-top: 80px; }
   .App .main-nav.navbar {
     background-color: #272F3B;
     color: #fff; }
