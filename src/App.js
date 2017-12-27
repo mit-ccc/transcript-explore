@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { Button, Container, Row, Col } from 'reactstrap';
 import ReactAudioPlayer from 'react-audio-player';
-
+import cx from 'classnames';
 import { Navbar, NavbarBrand, Nav, NavItem } from 'reactstrap';
+
 import { readTranscriptFromTsv } from './util';
 import FullTranscript from './components/FullTranscript';
 import TranscriptTopTerms from './components/TranscriptTopTerms';
@@ -28,11 +29,30 @@ class App extends Component {
           tsvFileContents: reader.result,
           tsvFilename: file,
           transcript: readTranscriptFromTsv(reader.result),
+          loadingTranscript: false,
         });
       };
 
       reader.readAsText(file);
     }
+  };
+
+  handleTranscriptUrlChange = () => {
+    const transcriptUrl = this.transcriptUrlInput.value.trim();
+    console.log('transcript url is', transcriptUrl);
+
+    this.setState({ loadingTranscript: true });
+
+    fetch(transcriptUrl)
+      .then(response => response.text())
+      .then(tsv => {
+        this.setState({
+          tsvFileContents: tsv,
+          tsvFilename: transcriptUrl,
+          transcript: readTranscriptFromTsv(tsv),
+          loadingTranscript: false,
+        });
+      });
   };
 
   handleSoundFileChange = evt => {
@@ -66,17 +86,45 @@ class App extends Component {
     }
   };
 
+  handleShortRewind = () => {
+    const rewindAmount = 5;
+    const time = Math.max(
+      0,
+      this.audioPlayer.audioEl.currentTime - rewindAmount
+    );
+    this.handleSeekAudio(time);
+  };
+
   handleSeekToWord = word => {
     this.handleSeekAudio(word.time);
   };
 
   renderFileInputs() {
+    const { loadingTranscript } = this.state;
+
     return (
       <div className="mb-4">
         <Row>
           <Col sm="6" className="upload-box">
             <h4>Select a transcript TSV</h4>
             <input type="file" onChange={this.handleTsvFileChange} />
+            <div className="form-inline url-group">
+              <input
+                type="text"
+                placeholder="https://..."
+                className={cx('mr-1 form-control', {
+                  disabled: loadingTranscript,
+                })}
+                ref={node => (this.transcriptUrlInput = node)}
+              />
+              <Button
+                type="button"
+                onClick={this.handleTranscriptUrlChange}
+                className={cx({ disabled: loadingTranscript })}
+              >
+                {loadingTranscript ? 'Loading...' : 'Set from URL'}
+              </Button>
+            </div>
           </Col>
           <Col sm="6" className="upload-box">
             <h4>Select a sound file</h4>
@@ -126,11 +174,20 @@ class App extends Component {
           <span className="text-muted">Please upload a sound file.</span>
         )}
         {soundFileUrl && (
-          <ReactAudioPlayer
-            src={soundFileUrl}
-            controls
-            ref={node => (window.ap = this.audioPlayer = node)}
-          />
+          <div>
+            <Button
+              size="sm align-top"
+              className="mr-1"
+              onClick={this.handleShortRewind}
+            >
+              Rewind 5s
+            </Button>
+            <ReactAudioPlayer
+              src={soundFileUrl}
+              controls
+              ref={node => (window.ap = this.audioPlayer = node)}
+            />
+          </div>
         )}
       </div>
     );
