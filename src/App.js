@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Row, Col } from 'reactstrap';
+import { Button, Container, Row, Col } from 'reactstrap';
 import ReactAudioPlayer from 'react-audio-player';
 
 import { Navbar, NavbarBrand, Nav, NavItem } from 'reactstrap';
@@ -14,11 +14,11 @@ class App extends Component {
     tsvFileContents: null,
     tsvFilename: null,
     transcript: null,
-    soundFileContents: null,
+    soundFileUrl: null,
     soundFilename: null,
   };
 
-  handleTsvChange = evt => {
+  handleTsvFileChange = evt => {
     const file = evt.target.files[0];
     console.log('got tsv file', file);
     if (file) {
@@ -35,13 +35,23 @@ class App extends Component {
     }
   };
 
-  handleSoundChange = evt => {
+  handleSoundFileChange = evt => {
     const file = evt.target.files[0];
     console.log('got sound file', file);
     // NOTE: using FileReader here breaks seeking and is heavy on memory usage
     this.setState({
       soundFilename: file,
-      soundFileContents: URL.createObjectURL(file),
+      soundFileUrl: URL.createObjectURL(file),
+    });
+  };
+
+  handleSoundUrlChange = () => {
+    const soundUrl = this.soundUrlInput.value.trim();
+    console.log('sound url is', soundUrl);
+
+    this.setState({
+      soundFilename: soundUrl,
+      soundFileUrl: soundUrl,
     });
   };
 
@@ -65,12 +75,23 @@ class App extends Component {
       <div className="mb-4">
         <Row>
           <Col sm="6" className="upload-box">
-            <h4>Upload a transcript TSV</h4>
-            <input type="file" onChange={this.handleTsvChange} />
+            <h4>Select a transcript TSV</h4>
+            <input type="file" onChange={this.handleTsvFileChange} />
           </Col>
           <Col sm="6" className="upload-box">
-            <h4>Upload a sound file</h4>
-            <input type="file" onChange={this.handleSoundChange} />
+            <h4>Select a sound file</h4>
+            <input type="file" onChange={this.handleSoundFileChange} />
+            <div className="form-inline url-group">
+              <input
+                type="text"
+                placeholder="https://..."
+                className="mr-1 form-control"
+                ref={node => (this.soundUrlInput = node)}
+              />
+              <Button type="button" onClick={this.handleSoundUrlChange}>
+                Set from URL
+              </Button>
+            </div>
           </Col>
         </Row>
       </div>
@@ -97,16 +118,16 @@ class App extends Component {
   }
 
   renderSoundPlayer() {
-    const { soundFileContents } = this.state;
+    const { soundFileUrl } = this.state;
 
     return (
       <div className="sound-player-container">
-        {!soundFileContents && (
+        {!soundFileUrl && (
           <span className="text-muted">Please upload a sound file.</span>
         )}
-        {soundFileContents && (
+        {soundFileUrl && (
           <ReactAudioPlayer
-            src={soundFileContents}
+            src={soundFileUrl}
             controls
             ref={node => (window.ap = this.audioPlayer = node)}
           />

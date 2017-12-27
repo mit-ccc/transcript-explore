@@ -9,13 +9,20 @@
   }
 
   .upload-box {
-    background: $gray-200;
+    background: $gray-100;
     padding: 2em;
-    border-right: 1px solid #fff;
-    border-bottom: 1px solid #fff;
+    border-right: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+    border-radius: $border-radius;
 
     h4 {
       margin-bottom: 0.6em;
     }
+  }
+
+  .url-group {
+    margin-top: map-get($spacers, 3);
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    padding-top: map-get($spacers, 3);
   }
 }
