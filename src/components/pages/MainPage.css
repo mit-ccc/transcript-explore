@@ -1,0 +1,19 @@
+/* Simple file to include in component SCSS to get access to
+ * variables and mixins */
+.MainPage {
+  padding-top: 80px; }
+  .MainPage .main-nav.navbar {
+    background-color: #272F3B;
+    color: #fff; }
+  .MainPage .upload-box {
+    background: #f8f9fa;
+    padding: 2em;
+    border-right: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+    border-radius: 0.25rem; }
+    .MainPage .upload-box h4 {
+      margin-bottom: 0.6em; }
+  .MainPage .url-group {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.05); }
