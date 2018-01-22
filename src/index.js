@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App';
+import App from './components/App';
 // import registerServiceWorker from './registerServiceWorker';
 
 // Note: we include .css files even though we write .scss files
@@ -17,8 +17,8 @@ render(App);
 
 // Hot Module Replacement API
 if (module.hot) {
-  module.hot.accept('./App', () => {
-    const App = require('./App').default;
+  module.hot.accept('./components/App', () => {
+    const App = require('./components/App').default;
     render(App);
   });
 }

@@ -1,78 +1,97 @@
 import React, { Component } from 'react';
 import { Button, Container, Row, Col } from 'reactstrap';
 import ReactAudioPlayer from 'react-audio-player';
-import cx from 'classnames';
 import { Navbar, NavbarBrand, Nav, NavItem } from 'reactstrap';
+import { addUrlProps, UrlQueryParamTypes } from 'react-url-query';
 
-import { readTranscriptFromTsv } from './util';
-import FullTranscript from './components/FullTranscript';
-import TranscriptTopTerms from './components/TranscriptTopTerms';
+import { readTranscriptFromTsv } from '../../util';
+import FullTranscript from '../FullTranscript';
+import TranscriptTopTerms from '../TranscriptTopTerms';
+import TranscriptFileSelector from '../TranscriptFileSelector';
+import SoundFileSelector from '../SoundFileSelector';
 
-import './App.css';
+import './MainPage.css';
 
-class App extends Component {
+/** Configuration for URL query parameters */
+const urlPropsQueryConfig = {
+  tsvUrl: { type: UrlQueryParamTypes.string },
+  externalAudioUrl: { type: UrlQueryParamTypes.string, queryParam: 'audioUrl' },
+};
+
+class MainPage extends Component {
   state = {
-    tsvFileContents: null,
-    tsvFilename: null,
     transcript: null,
-    soundFileUrl: null,
-    soundFilename: null,
+    audioUrl: null,
   };
 
-  handleTsvFileChange = evt => {
-    const file = evt.target.files[0];
-    console.log('got tsv file', file);
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.setState({
-          tsvFileContents: reader.result,
-          tsvFilename: file,
-          transcript: readTranscriptFromTsv(reader.result),
-          loadingTranscript: false,
-        });
-      };
-
-      reader.readAsText(file);
+  componentWillMount() {
+    const { tsvUrl, externalAudioUrl } = this.props;
+    if (tsvUrl != null) {
+      this.fetchTranscript(tsvUrl);
     }
+    if (externalAudioUrl != null) {
+      this.setState({
+        audioUrl: externalAudioUrl,
+      });
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { tsvUrl: currTsvUrl } = this.props;
+    const { tsvUrl: nextTsvUrl } = nextProps;
+
+    if (currTsvUrl !== nextTsvUrl) {
+      this.fetchTranscript(nextTsvUrl);
+    }
+  }
+
+  handleTsvFileChange = tsv => {
+    const { onChangeTsvUrl } = this.props;
+
+    this.setState({
+      transcript: readTranscriptFromTsv(tsv),
+      loadingTranscript: false,
+    });
+
+    // remove URL when setting a file
+    onChangeTsvUrl(null);
   };
 
-  handleTranscriptUrlChange = () => {
-    const transcriptUrl = this.transcriptUrlInput.value.trim();
-    console.log('transcript url is', transcriptUrl);
-
+  fetchTranscript(transcriptUrl) {
+    console.log('fetch transcript at url', transcriptUrl);
     this.setState({ loadingTranscript: true });
-
     fetch(transcriptUrl)
       .then(response => response.text())
       .then(tsv => {
         this.setState({
-          tsvFileContents: tsv,
-          tsvFilename: transcriptUrl,
           transcript: readTranscriptFromTsv(tsv),
           loadingTranscript: false,
         });
       });
-  };
+  }
 
-  handleSoundFileChange = evt => {
-    const file = evt.target.files[0];
+  handleSoundFileChange = file => {
+    const { onChangeExternalAudioUrl } = this.props;
+
     console.log('got sound file', file);
     // NOTE: using FileReader here breaks seeking and is heavy on memory usage
+    // note we have to use audioUrl in state here instead of directly in props
+    // since this file blob URL is different than a typical external URL,
+    // so we don't want it populating the URL query param or the set URL field.
     this.setState({
-      soundFilename: file,
-      soundFileUrl: URL.createObjectURL(file),
+      audioUrl: URL.createObjectURL(file),
     });
+    onChangeExternalAudioUrl(null);
   };
 
-  handleSoundUrlChange = () => {
-    const soundUrl = this.soundUrlInput.value.trim();
-    console.log('sound url is', soundUrl);
+  handleSoundUrlChange = externalAudioUrl => {
+    const { onChangeExternalAudioUrl } = this.props;
+    console.log('sound url is', externalAudioUrl);
 
     this.setState({
-      soundFilename: soundUrl,
-      soundFileUrl: soundUrl,
+      audioUrl: externalAudioUrl,
     });
+    onChangeExternalAudioUrl(externalAudioUrl);
   };
 
   /**
@@ -100,46 +119,26 @@ class App extends Component {
   };
 
   renderFileInputs() {
+    const { tsvUrl, onChangeTsvUrl, externalAudioUrl } = this.props;
     const { loadingTranscript } = this.state;
 
     return (
       <div className="mb-4">
         <Row>
           <Col sm="6" className="upload-box">
-            <h4>Select a transcript TSV</h4>
-            <input type="file" onChange={this.handleTsvFileChange} />
-            <div className="form-inline url-group">
-              <input
-                type="text"
-                placeholder="https://..."
-                className={cx('mr-1 form-control', {
-                  disabled: loadingTranscript,
-                })}
-                ref={node => (this.transcriptUrlInput = node)}
-              />
-              <Button
-                type="button"
-                onClick={this.handleTranscriptUrlChange}
-                className={cx({ disabled: loadingTranscript })}
-              >
-                {loadingTranscript ? 'Loading...' : 'Set from URL'}
-              </Button>
-            </div>
+            <TranscriptFileSelector
+              loadingTranscript={loadingTranscript}
+              url={tsvUrl}
+              onChangeUrl={onChangeTsvUrl}
+              onChangeFile={this.handleTsvFileChange}
+            />
           </Col>
           <Col sm="6" className="upload-box">
-            <h4>Select a sound file</h4>
-            <input type="file" onChange={this.handleSoundFileChange} />
-            <div className="form-inline url-group">
-              <input
-                type="text"
-                placeholder="https://..."
-                className="mr-1 form-control"
-                ref={node => (this.soundUrlInput = node)}
-              />
-              <Button type="button" onClick={this.handleSoundUrlChange}>
-                Set from URL
-              </Button>
-            </div>
+            <SoundFileSelector
+              url={externalAudioUrl}
+              onChangeUrl={this.handleSoundUrlChange}
+              onChangeFile={this.handleSoundFileChange}
+            />
           </Col>
         </Row>
       </div>
@@ -166,14 +165,14 @@ class App extends Component {
   }
 
   renderSoundPlayer() {
-    const { soundFileUrl } = this.state;
+    const { audioUrl } = this.state;
 
     return (
       <div className="sound-player-container">
-        {!soundFileUrl && (
-          <span className="text-muted">Please upload a sound file.</span>
+        {!audioUrl && (
+          <span className="text-muted">Please select a sound file.</span>
         )}
-        {soundFileUrl && (
+        {audioUrl && (
           <div>
             <Button
               size="sm align-top"
@@ -183,9 +182,9 @@ class App extends Component {
               Rewind 5s
             </Button>
             <ReactAudioPlayer
-              src={soundFileUrl}
+              src={audioUrl}
               controls
-              ref={node => (window.ap = this.audioPlayer = node)}
+              ref={node => (this.audioPlayer = node)}
             />
           </div>
         )}
@@ -228,7 +227,7 @@ class App extends Component {
 
   render() {
     return (
-      <div className="App">
+      <div className="MainPage">
         {this.renderNav()}
         <Container>
           {this.renderFileInputs()}
@@ -240,4 +239,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default addUrlProps({ urlPropsQueryConfig })(MainPage);
