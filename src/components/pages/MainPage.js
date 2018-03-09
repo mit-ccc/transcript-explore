@@ -16,7 +16,7 @@ import './MainPage.css';
 const urlPropsQueryConfig = {
   tsvUrl: { type: UrlQueryParamTypes.string },
   externalAudioUrl: { type: UrlQueryParamTypes.string, queryParam: 'audioUrl' },
-  startTimestamp: { type: UrlQueryParamTypes.string, queryParam: 't' }
+  startTimestamp: { type: UrlQueryParamTypes.number, queryParam: 't' }
 };
 
 class MainPage extends Component {
@@ -40,7 +40,7 @@ class MainPage extends Component {
   componentDidMount() {
       const { startTimestamp } = this.props;
       if (startTimestamp != null) {
-          this.handleSeekAudio(parseFloat(startTimestamp));
+          this.handleSeekAudio(startTimestamp);
       }
   }
 
