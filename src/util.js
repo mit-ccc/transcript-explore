@@ -1,18 +1,17 @@
 import * as d3 from 'd3';
 import stopwords from './stopwords.json';
 
-/**
- * Converts a TSV file with word, start time, end time into segments
- * and words.
- */
-export function readTranscriptFromTsv(tsv) {
-  // create a map of stopwords for O(1) lookups
-  const stopwordMap = d3
-    .nest()
-    .key(d => d)
-    .rollup(() => true)
-    .object(stopwords.map(d => d.toLowerCase()));
+// create a map of stopwords for O(1) lookups
+const stopwordMap = d3
+  .nest()
+  .key(d => d)
+  .rollup(() => true)
+  .object(stopwords.map(d => d.toLowerCase()));
 
+/**
+ * Convert words from TSV format "word\tstart\tend" to normalized JSON format
+ */
+function normalizeWordsFromTsv(tsv) {
   const words = d3.tsvParseRows(tsv, (d, i) => ({
     string: d[0],
     time: +d[1],
@@ -20,6 +19,27 @@ export function readTranscriptFromTsv(tsv) {
     stopword: stopwordMap[d[0].toLowerCase()] != null,
   }));
 
+  return words;
+}
+
+/**
+ * Convert words from JSON format [word, start, end] to normalized JSON format
+ */
+function normalizeWordsFromJson(json) {
+  const words = json.words.map(word => ({
+    string: word[0],
+    time: word[1],
+    endTime: word[2],
+    stopWord: stopwordMap[word[0].toLowerCase()] != null,
+  }));
+  return words;
+}
+
+/**
+ * Given a list of normalized words, process the rest of the transcript segments
+ * and other metadata.
+ */
+function processTranscript(words) {
   addConcordance(words);
 
   const segments = discoverSegmentsFromWords(words);
@@ -29,8 +49,23 @@ export function readTranscriptFromTsv(tsv) {
     segments,
     duration: words[words.length - 1].endTime,
   };
-  console.log('Read transcript', transcript);
+
   return transcript;
+}
+
+/**
+ * Converts a TSV file with word, start time, end time into segments
+ * and words.
+ */
+export function readTranscriptFromTsv(tsv) {
+  return processTranscript(normalizeWordsFromTsv(tsv));
+}
+
+/**
+ * Converts a transcript JSON file to the expected transcript format.
+ */
+export function readTranscriptFromJson(json) {
+  return processTranscript(normalizeWordsFromJson(json));
 }
 
 /**
@@ -69,6 +104,9 @@ function discoverSegmentsFromWords(words) {
   return segments;
 }
 
+/**
+ * Given a list of words, create concordance previews around each
+ */
 function addConcordance(words) {
   const numWords = 5; // before and after
   const numBefore = numWords;
