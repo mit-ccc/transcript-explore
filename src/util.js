@@ -34,6 +34,17 @@ export function readTranscriptFromTsv(tsv) {
 }
 
 /**
+ * Converts a transcript JSON file to the expected transcript format.
+ */
+export function readTranscriptFromJson(json) {
+  return {
+    words: [],
+    segments: [],
+    duration: 100,
+  };
+}
+
+/**
  * Looks for gaps in end times of words to compute where segments should be split
  */
 function discoverSegmentsFromWords(words) {

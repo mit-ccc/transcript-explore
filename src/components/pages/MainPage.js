@@ -4,7 +4,7 @@ import ReactAudioPlayer from 'react-audio-player';
 import { Navbar, NavbarBrand, Nav, NavItem } from 'reactstrap';
 import { addUrlProps, UrlQueryParamTypes } from 'react-url-query';
 
-import { readTranscriptFromTsv } from '../../util';
+import { readTranscriptFromTsv, readTranscriptFromJson } from '../../util';
 import FullTranscript from '../FullTranscript';
 import TranscriptTopTerms from '../TranscriptTopTerms';
 import TranscriptFileSelector from '../TranscriptFileSelector';
@@ -14,9 +14,10 @@ import './MainPage.css';
 
 /** Configuration for URL query parameters */
 const urlPropsQueryConfig = {
-  tsvUrl: { type: UrlQueryParamTypes.string },
+  tsvUrl: { type: UrlQueryParamTypes.string }, // deprecated
+  transcriptUrl: { type: UrlQueryParamTypes.string }, // takes precedence over tsvUrl
   externalAudioUrl: { type: UrlQueryParamTypes.string, queryParam: 'audioUrl' },
-  startTimestamp: { type: UrlQueryParamTypes.number, queryParam: 't' }
+  startTimestamp: { type: UrlQueryParamTypes.number, queryParam: 't' },
 };
 
 class MainPage extends Component {
@@ -26,10 +27,27 @@ class MainPage extends Component {
   };
 
   componentWillMount() {
-    const { tsvUrl, externalAudioUrl } = this.props;
-    if (tsvUrl != null) {
-      this.fetchTranscript(tsvUrl);
+    const {
+      tsvUrl,
+      transcriptUrl,
+      externalAudioUrl,
+      onChangeUrlQueryParams,
+    } = this.props;
+    if (transcriptUrl != null) {
+      this.fetchTranscript(transcriptUrl);
     }
+
+    // remove deprecated url query param
+    if (tsvUrl != null) {
+      const changes = { tsvUrl: null };
+
+      // rename to transcriptUrl unless we already have it, in which case just drop tsvUrl
+      if (transcriptUrl == null) {
+        changes.transcriptUrl = tsvUrl;
+      }
+      onChangeUrlQueryParams(changes);
+    }
+
     if (externalAudioUrl != null) {
       this.setState({
         audioUrl: externalAudioUrl,
@@ -38,31 +56,40 @@ class MainPage extends Component {
   }
 
   componentDidMount() {
-      const { startTimestamp } = this.props;
-      if (startTimestamp != null) {
-          this.handleSeekAudio(startTimestamp);
-      }
-  }
-
-  componentWillReceiveProps(nextProps) {
-    const { tsvUrl: currTsvUrl } = this.props;
-    const { tsvUrl: nextTsvUrl } = nextProps;
-
-    if (currTsvUrl !== nextTsvUrl) {
-      this.fetchTranscript(nextTsvUrl);
+    const { startTimestamp } = this.props;
+    if (startTimestamp != null) {
+      this.handleSeekAudio(startTimestamp);
     }
   }
 
-  handleTsvFileChange = tsv => {
-    const { onChangeTsvUrl } = this.props;
+  componentWillReceiveProps(nextProps) {
+    const { transcriptUrl: currTranscriptUrl } = this.props;
+    const { transcriptUrl: nextTranscriptUrl } = nextProps;
+
+    if (currTranscriptUrl !== nextTranscriptUrl && nextTranscriptUrl) {
+      this.fetchTranscript(nextTranscriptUrl);
+    }
+  }
+
+  handleTranscriptFileChange = (transcriptFilename, fileContents) => {
+    const { onChangeUrlQueryParams } = this.props;
+
+    console.log('got transcriptFile', transcriptFilename);
+    let transcript;
+    if (/.tsv$/.test(transcriptFilename)) {
+      transcript = readTranscriptFromTsv(fileContents);
+    } else {
+      transcript = readTranscriptFromJson(JSON.parse(fileContents));
+    }
+    console.log('loaded transcript', transcript);
 
     this.setState({
-      transcript: readTranscriptFromTsv(tsv),
+      transcript,
       loadingTranscript: false,
     });
 
     // remove URL when setting a file
-    onChangeTsvUrl(null);
+    onChangeUrlQueryParams({ transcriptUrl: null, tsvUrl: null });
   };
 
   fetchTranscript(transcriptUrl) {
@@ -70,9 +97,16 @@ class MainPage extends Component {
     this.setState({ loadingTranscript: true });
     fetch(transcriptUrl)
       .then(response => response.text())
-      .then(tsv => {
+      .then(fileContents => {
+        let transcript;
+
+        if (/.tsv$/.test(transcriptUrl)) {
+          transcript = readTranscriptFromTsv(fileContents);
+        } else {
+          transcript = readTranscriptFromJson(JSON.parse(fileContents));
+        }
         this.setState({
-          transcript: readTranscriptFromTsv(tsv),
+          transcript: transcript,
           loadingTranscript: false,
         });
       });
@@ -127,8 +161,13 @@ class MainPage extends Component {
   };
 
   renderFileInputs() {
-    const { tsvUrl, onChangeTsvUrl, externalAudioUrl } = this.props;
+    const {
+      transcriptUrl,
+      onChangeTranscriptUrl,
+      externalAudioUrl,
+    } = this.props;
     const { loadingTranscript } = this.state;
+    console.log('RENDER transcriptUrl', transcriptUrl);
 
     return (
       <div className="mb-4">
@@ -136,9 +175,9 @@ class MainPage extends Component {
           <Col sm="6" className="upload-box">
             <TranscriptFileSelector
               loadingTranscript={loadingTranscript}
-              url={tsvUrl}
-              onChangeUrl={onChangeTsvUrl}
-              onChangeFile={this.handleTsvFileChange}
+              url={transcriptUrl}
+              onChangeUrl={onChangeTranscriptUrl}
+              onChangeFile={this.handleTranscriptFileChange}
             />
           </Col>
           <Col sm="6" className="upload-box">

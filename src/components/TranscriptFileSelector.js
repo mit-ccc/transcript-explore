@@ -36,15 +36,15 @@ class TranscriptFileSelector extends Component {
     }
   }
 
-  handleTsvFileChange = evt => {
+  handleTranscriptFileChange = evt => {
     const { onChangeFile } = this.props;
 
     const file = evt.target.files[0];
-    console.log('got tsv file', file);
+    console.log('got transcript file', file && file.name, file);
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
-        onChangeFile(reader.result);
+        onChangeFile(file.name, reader.result);
       };
 
       reader.readAsText(file);
@@ -70,8 +70,8 @@ class TranscriptFileSelector extends Component {
 
     return (
       <div className="TranscriptFileSelector">
-        <h4>Select a transcript TSV</h4>
-        <input type="file" onChange={this.handleTsvFileChange} />
+        <h4>Select a transcript TSV or JSON</h4>
+        <input type="file" onChange={this.handleTranscriptFileChange} />
         <div className="form-inline url-group">
           <form onSubmit={this.handleSetUrlChange}>
             <input
