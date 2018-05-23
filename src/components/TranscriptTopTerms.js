@@ -1,21 +1,23 @@
 import React, { Component } from 'react';
 import * as d3 from 'd3';
 
-import { topTermsFromTranscript, formatTime } from '../util';
+import { topTermsFromTranscript, formatTime, renderWord } from '../util';
 
 import './TranscriptTopTerms.css';
 
 class TranscriptTopTerms extends Component {
+  static defaultProps = {
+    numTerms: 80,
+  };
   render() {
-    const { transcript, onSeekTime } = this.props;
+    const { transcript, onSeekTime, numTerms } = this.props;
 
     if (transcript == null) {
       return null;
     }
 
-    const topTerms = topTermsFromTranscript(transcript);
-    console.log('got top terms', topTerms);
-    const filteredTopTerms = topTerms.filter(d => !d.stopword).slice(0, 80);
+    const filteredTopTerms = topTermsFromTranscript(transcript, true, numTerms);
+    console.log('got top terms', filteredTopTerms);
 
     return (
       <div className="TranscriptTopTerms">
@@ -70,7 +72,7 @@ class TopTerm extends Component {
               <span className="timestamp-time">{time}</span>
               <span className="timestamp-preview">
                 {word.concordance.before.join(' ') + ' '}
-                <b>{word.string}</b>
+                <b>{renderWord(word)}</b>
                 {' ' + word.concordance.after.join(' ')}
               </span>
             </span>
@@ -106,7 +108,7 @@ class TopTerm extends Component {
         onMouseEnter={this.handleMouseEnter}
         onMouseLeave={this.handleMouseLeave}
       >
-        <span className="term-string">{term.key}</span>
+        <span className="term-string">{renderWord(term.values[0])}</span>
         <span className="term-freq">{term.values.length}</span>
         {this.renderTimePlot()}
         {this.renderTimestamps()}

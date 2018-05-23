@@ -1,5 +1,6 @@
 import * as d3 from 'd3';
 import stopwords from './stopwords.json';
+import globalData from './globalData';
 
 // create a map of stopwords for O(1) lookups
 const stopwordMap = d3
@@ -7,6 +8,13 @@ const stopwordMap = d3
   .key(d => d)
   .rollup(() => true)
   .object(stopwords.map(d => d.toLowerCase()));
+
+/**
+ * helper to render a word, denormalizing if available
+ */
+export function renderWord(word) {
+  return globalData.wordDenorm[word.string] || word.string;
+}
 
 /**
  * Convert words from TSV format "word\tstart\tend" to normalized JSON format
@@ -119,7 +127,7 @@ function addConcordance(words) {
     let afterWords = [];
 
     while (beforeWordIndex < i) {
-      beforeWords.push(words[beforeWordIndex].string);
+      beforeWords.push(renderWord(words[beforeWordIndex]));
       beforeWordIndex += 1;
     }
 
@@ -127,14 +135,14 @@ function addConcordance(words) {
       afterWordIndex > i &&
       afterWordIndex <= Math.min(i + numAfter, words.length - 1)
     ) {
-      afterWords.push(words[afterWordIndex].string);
+      afterWords.push(renderWord(words[afterWordIndex]));
       afterWordIndex += 1;
     }
 
     word.concordance = {
       before: beforeWords,
       after: afterWords,
-      string: [...beforeWords, word.string, ...afterWords].join(' '),
+      string: [...beforeWords, renderWord(word), ...afterWords].join(' '),
     };
   });
 
@@ -166,16 +174,37 @@ export function formatTime(time) {
 /**
  * Takes a transcript and produces the top terms with links to all occurrences
  */
-export function topTermsFromTranscript(transcript) {
+export function topTermsFromTranscript(transcript, filterStopWords, limit) {
   const terms = d3
     .nest()
     .key(d => d.string)
-    .entries(transcript.words)
-    .sort((a, b) => b.values.length - a.values.length);
+    .entries(transcript.words);
+  // .sort((a, b) => b.values.length - a.values.length);
 
+  // mark as stopwords, compute using unigramcount
   terms.forEach(term => {
     term.stopword = term.values[0].stopword;
+    term.unigramCount =
+      globalData.unigramCounts[term.key] || globalData.unigramCounts.__default;
+    term.freqScore = term.values.length / term.unigramCount;
   });
 
-  return terms;
+  terms.sort((a, b) => b.freqScore - a.freqScore);
+
+  let filteredTerms = terms;
+
+  // filter out stop words if required
+  if (filterStopWords) {
+    filteredTerms = filteredTerms.filter(d => !d.stopword);
+  }
+
+  // truncate if required
+  if (limit) {
+    filteredTerms = filteredTerms.slice(0, limit);
+  }
+
+  // re-sort by frequency
+  filteredTerms.sort((a, b) => b.values.length - a.values.length);
+
+  return filteredTerms;
 }

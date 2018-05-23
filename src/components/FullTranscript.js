@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { formatTime } from '../util';
+import { formatTime, renderWord } from '../util';
 
 import './FullTranscript.css';
 
@@ -51,10 +51,9 @@ class TranscriptWord extends Component {
 
   render() {
     const { word } = this.props;
-
     return (
       <span className="TranscriptWord" onClick={this.handleClick}>
-        {word.string}
+        {renderWord(word)}
       </span>
     );
   }

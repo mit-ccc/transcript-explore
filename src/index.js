@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './components/App';
+import { initializeGlobalData } from './globalData';
 // import registerServiceWorker from './registerServiceWorker';
 
 // Note: we include .css files even though we write .scss files
@@ -11,9 +12,11 @@ const render = Component => {
   ReactDOM.render(<Component />, document.getElementById('root'));
 };
 
-// Kick off initial render
-render(App);
-// registerServiceWorker();
+initializeGlobalData().then(() => {
+  // Kick off initial render
+  render(App);
+  // registerServiceWorker();
+});
 
 // Hot Module Replacement API
 if (module.hot) {
