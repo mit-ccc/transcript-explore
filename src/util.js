@@ -1,5 +1,6 @@
 import * as d3 from 'd3';
 import stopwords from './stopwords.json';
+import globalData from './globalData';
 
 // create a map of stopwords for O(1) lookups
 const stopwordMap = d3
@@ -7,6 +8,13 @@ const stopwordMap = d3
   .key(d => d)
   .rollup(() => true)
   .object(stopwords.map(d => d.toLowerCase()));
+
+/**
+ * helper to render a word, denormalizing if available
+ */
+export function renderWord(word) {
+  return globalData.wordDenorm[word.string] || word.string;
+}
 
 /**
  * Convert words from TSV format "word\tstart\tend" to normalized JSON format
@@ -119,7 +127,7 @@ function addConcordance(words) {
     let afterWords = [];
 
     while (beforeWordIndex < i) {
-      beforeWords.push(words[beforeWordIndex].string);
+      beforeWords.push(renderWord(words[beforeWordIndex]));
       beforeWordIndex += 1;
     }
 
@@ -127,14 +135,14 @@ function addConcordance(words) {
       afterWordIndex > i &&
       afterWordIndex <= Math.min(i + numAfter, words.length - 1)
     ) {
-      afterWords.push(words[afterWordIndex].string);
+      afterWords.push(renderWord(words[afterWordIndex]));
       afterWordIndex += 1;
     }
 
     word.concordance = {
       before: beforeWords,
       after: afterWords,
-      string: [...beforeWords, word.string, ...afterWords].join(' '),
+      string: [...beforeWords, renderWord(word), ...afterWords].join(' '),
     };
   });
 

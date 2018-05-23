@@ -1,7 +1,7 @@
 import { tsvParseRows, mean } from 'd3';
 
 const globalData = {
-  unigramCounts: {},
+  unigramCounts: { __default: 1 },
   wordDenorm: {},
 };
 window.globalData = globalData;
