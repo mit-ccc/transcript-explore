@@ -19,3 +19,7 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# data from doug
+unigram_counts.tsv
+word_denorm.tsv
