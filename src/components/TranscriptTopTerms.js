@@ -17,7 +17,6 @@ class TranscriptTopTerms extends Component {
     }
 
     const filteredTopTerms = topTermsFromTranscript(transcript, true, numTerms);
-    console.log('got top terms', filteredTopTerms);
 
     return (
       <div className="TranscriptTopTerms">

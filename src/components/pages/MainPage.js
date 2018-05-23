@@ -74,14 +74,12 @@ class MainPage extends Component {
   handleTranscriptFileChange = (transcriptFilename, fileContents) => {
     const { onChangeUrlQueryParams } = this.props;
 
-    console.log('got transcriptFile', transcriptFilename);
     let transcript;
     if (/.tsv$/.test(transcriptFilename)) {
       transcript = readTranscriptFromTsv(fileContents);
     } else {
       transcript = readTranscriptFromJson(JSON.parse(fileContents));
     }
-    console.log('loaded transcript', transcript);
 
     this.setState({
       transcript,
@@ -93,7 +91,6 @@ class MainPage extends Component {
   };
 
   fetchTranscript(transcriptUrl) {
-    console.log('fetch transcript at url', transcriptUrl);
     this.setState({ loadingTranscript: true });
     fetch(transcriptUrl)
       .then(response => response.text())
@@ -115,7 +112,6 @@ class MainPage extends Component {
   handleSoundFileChange = file => {
     const { onChangeExternalAudioUrl } = this.props;
 
-    console.log('got sound file', file);
     // NOTE: using FileReader here breaks seeking and is heavy on memory usage
     // note we have to use audioUrl in state here instead of directly in props
     // since this file blob URL is different than a typical external URL,
@@ -128,7 +124,6 @@ class MainPage extends Component {
 
   handleSoundUrlChange = externalAudioUrl => {
     const { onChangeExternalAudioUrl } = this.props;
-    console.log('sound url is', externalAudioUrl);
 
     this.setState({
       audioUrl: externalAudioUrl,
@@ -141,7 +136,6 @@ class MainPage extends Component {
    */
   handleSeekAudio = seconds => {
     if (this.audioPlayer && this.audioPlayer.audioEl) {
-      console.log('seeking to', seconds);
       this.audioPlayer.audioEl.play();
       this.audioPlayer.audioEl.currentTime = seconds;
     }
@@ -167,7 +161,6 @@ class MainPage extends Component {
       externalAudioUrl,
     } = this.props;
     const { loadingTranscript } = this.state;
-    console.log('RENDER transcriptUrl', transcriptUrl);
 
     return (
       <div className="mb-4">
@@ -198,6 +191,8 @@ class MainPage extends Component {
     if (!transcript) {
       return null;
     }
+
+    console.log('rendering transcript', transcript);
 
     return (
       <div className="text-container mb-4">

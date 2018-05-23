@@ -17,7 +17,6 @@ class SoundFileSelector extends Component {
   componentWillMount() {
     const { url } = this.props;
     if (url != null) {
-      console.log('initializing sound url state to', url);
       this.setState({
         urlTextInput: url,
       });
@@ -29,7 +28,6 @@ class SoundFileSelector extends Component {
     const { url: nextUrl } = nextProps;
 
     if (currUrl !== nextUrl) {
-      console.log('received new URL to set state to', nextUrl, 'was', currUrl);
       this.setState({ urlTextInput: nextUrl || '' });
     }
   }
@@ -37,7 +35,6 @@ class SoundFileSelector extends Component {
   handleSoundFileChange = evt => {
     const { onChangeFile } = this.props;
     const file = evt.target.files[0];
-    console.log('got sound file', file);
 
     onChangeFile(file);
   };
@@ -50,7 +47,6 @@ class SoundFileSelector extends Component {
     const { onChangeUrl } = this.props;
     const { urlTextInput: audioUrl } = this.state;
 
-    console.log('audio url is', audioUrl);
     onChangeUrl(audioUrl);
     evt.preventDefault();
   };

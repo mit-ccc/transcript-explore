@@ -1,11 +1,26 @@
 /* Simple file to include in component SCSS to get access to
  * variables and mixins */
 .FullTranscript .TranscriptSegment {
+  position: relative;
   margin-bottom: 1em; }
   .FullTranscript .TranscriptSegment .segment-time {
     font-size: 0.8em;
-    color: #adb5bd;
-    display: block; }
+    color: #868e96; }
+  .FullTranscript .TranscriptSegment .segment-speaker {
+    margin-right: 0.4em;
+    font-weight: bold; }
+  .FullTranscript .TranscriptSegment .segment-speaker-avatar {
+    position: absolute;
+    left: -35px;
+    top: 2px;
+    width: 27px;
+    height: 27px;
+    line-height: 28px;
+    text-align: center;
+    border-radius: 100%;
+    background: #495057;
+    font-size: 0.8em;
+    color: #fff; }
 
 .FullTranscript .TranscriptWord {
   cursor: pointer; }

@@ -2,12 +2,33 @@
 
 .FullTranscript {
   .TranscriptSegment {
+    $avatar-size: 27px;
+    position: relative;
     margin-bottom: 1em;
 
     .segment-time {
       font-size: 0.8em;
-      color: $gray-500;
-      display: block;
+      color: $gray-600;
+    }
+
+    .segment-speaker {
+      margin-right: 0.4em;
+      font-weight: bold;
+    }
+  
+    .segment-speaker-avatar {
+      position: absolute;
+      left: -$avatar-size - 8px;
+      top: 2px;
+      width: $avatar-size;
+      height: $avatar-size;
+      line-height: $avatar-size + 1px;
+      text-align: center;
+      border-radius: 100%;
+      background: $gray-700;
+      font-size: 0.8em;
+      color: #fff;
+  
     }
   }
 

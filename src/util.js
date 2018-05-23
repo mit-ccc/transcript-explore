@@ -47,10 +47,15 @@ function normalizeWordsFromJson(json) {
  * Given a list of normalized words, process the rest of the transcript segments
  * and other metadata.
  */
-function processTranscript(words) {
+function processTranscript(words, diarization) {
   addConcordance(words);
-
-  const segments = discoverSegmentsFromWords(words);
+  let segments;
+  if (diarization) {
+    console.log('got diarization', diarization);
+    segments = computeSegmentsFromDiarization(words, diarization);
+  } else {
+    segments = discoverSegmentsFromWords(words);
+  }
 
   const transcript = {
     words,
@@ -73,7 +78,7 @@ export function readTranscriptFromTsv(tsv) {
  * Converts a transcript JSON file to the expected transcript format.
  */
 export function readTranscriptFromJson(json) {
-  return processTranscript(normalizeWordsFromJson(json));
+  return processTranscript(normalizeWordsFromJson(json), json.diarization);
 }
 
 /**
@@ -88,7 +93,7 @@ function discoverSegmentsFromWords(words) {
   };
 
   // amount of seconds before a new segment is defined
-  const segmentThreshold = 1.5;
+  const segmentThreshold = 1.2;
 
   for (let i = 1; i < words.length; ++i) {
     const word = words[i];
@@ -108,6 +113,41 @@ function discoverSegmentsFromWords(words) {
   }
 
   segments.push(currSegment);
+
+  return segments;
+}
+
+function computeSegmentsFromDiarization(words, diarization) {
+  // convert from spkr_label SXX to numbers 0, ... num speakers
+  let lastSpeakerId = 0;
+  const speakerIdMap = {};
+
+  diarization.sort((a, b) => a.start_seconds - b.start_seconds);
+  const segments = diarization.map(d => {
+    // get ID from label
+    let speakerId = speakerIdMap[d.spkr_label];
+    if (!speakerId) {
+      lastSpeakerId += 1;
+      speakerId = lastSpeakerId;
+      speakerIdMap[d.spkr_label] = speakerId;
+    }
+
+    const segment = {
+      time: d.start_seconds,
+      endTime: d.end_seconds,
+      speakerInfo: {
+        gender: d.gender,
+        id: speakerId,
+        envType: d.env_type,
+      },
+    };
+
+    segment.words = words.filter(
+      word => word.time >= segment.time && word.time <= segment.endTime
+    );
+
+    return segment;
+  });
 
   return segments;
 }
