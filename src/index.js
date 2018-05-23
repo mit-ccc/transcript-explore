@@ -12,11 +12,11 @@ const render = Component => {
   ReactDOM.render(<Component />, document.getElementById('root'));
 };
 
-initializeGlobalData();
-
-// Kick off initial render
-render(App);
-// registerServiceWorker();
+initializeGlobalData().then(() => {
+  // Kick off initial render
+  render(App);
+  // registerServiceWorker();
+});
 
 // Hot Module Replacement API
 if (module.hot) {

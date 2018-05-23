@@ -6,16 +6,18 @@ import { topTermsFromTranscript, formatTime, renderWord } from '../util';
 import './TranscriptTopTerms.css';
 
 class TranscriptTopTerms extends Component {
+  static defaultProps = {
+    numTerms: 80,
+  };
   render() {
-    const { transcript, onSeekTime } = this.props;
+    const { transcript, onSeekTime, numTerms } = this.props;
 
     if (transcript == null) {
       return null;
     }
 
-    const topTerms = topTermsFromTranscript(transcript);
-    console.log('got top terms', topTerms);
-    const filteredTopTerms = topTerms.filter(d => !d.stopword).slice(0, 80);
+    const filteredTopTerms = topTermsFromTranscript(transcript, true, numTerms);
+    console.log('got top terms', filteredTopTerms);
 
     return (
       <div className="TranscriptTopTerms">

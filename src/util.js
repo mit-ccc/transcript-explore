@@ -174,16 +174,37 @@ export function formatTime(time) {
 /**
  * Takes a transcript and produces the top terms with links to all occurrences
  */
-export function topTermsFromTranscript(transcript) {
+export function topTermsFromTranscript(transcript, filterStopWords, limit) {
   const terms = d3
     .nest()
     .key(d => d.string)
-    .entries(transcript.words)
-    .sort((a, b) => b.values.length - a.values.length);
+    .entries(transcript.words);
+  // .sort((a, b) => b.values.length - a.values.length);
 
+  // mark as stopwords, compute using unigramcount
   terms.forEach(term => {
     term.stopword = term.values[0].stopword;
+    term.unigramCount =
+      globalData.unigramCounts[term.key] || globalData.unigramCounts.__default;
+    term.freqScore = term.values.length / term.unigramCount;
   });
 
-  return terms;
+  terms.sort((a, b) => b.freqScore - a.freqScore);
+
+  let filteredTerms = terms;
+
+  // filter out stop words if required
+  if (filterStopWords) {
+    filteredTerms = filteredTerms.filter(d => !d.stopword);
+  }
+
+  // truncate if required
+  if (limit) {
+    filteredTerms = filteredTerms.slice(0, limit);
+  }
+
+  // re-sort by frequency
+  filteredTerms.sort((a, b) => b.values.length - a.values.length);
+
+  return filteredTerms;
 }
