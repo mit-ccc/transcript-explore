@@ -10,4 +10,6 @@
 .FullTranscript .TranscriptWord {
   cursor: pointer; }
   .FullTranscript .TranscriptWord:hover {
-    text-decoration: underline; }
+    text-decoration: underline;
+    background: #e4eeff;
+    color: #163f86; }

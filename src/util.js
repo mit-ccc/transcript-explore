@@ -195,7 +195,13 @@ export function topTermsFromTranscript(transcript, filterStopWords, limit) {
 
   // filter out stop words if required
   if (filterStopWords) {
-    filteredTerms = filteredTerms.filter(d => !d.stopword);
+    filteredTerms = filteredTerms.filter(
+      d =>
+        !d.stopword &&
+        d.key.length > 2 &&
+        d.key !== '<unk>' &&
+        d.key !== '[noise]'
+    );
   }
 
   // truncate if required
