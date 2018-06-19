@@ -258,28 +258,23 @@ export function topTermsFromTranscript(transcript, filterStopWords, limit) {
 /**
  * Finds the actual end time for when a speaker stops talking (collapses multiple of the same speaker in a row into one end time)
  */
-export function getSpeakerEndTime(segments, segmentId) {
-  // get current segment info
-  const currentSegment = segments[segmentId];
-  if (currentSegment.speakerInfo) {
-    const { id: currentSpeakerId } = currentSegment.speakerInfo;
-    let { endTime } = currentSegment;
+export function getSpeakerEndTime(segments, segmentIndex) {
+  let initialSegment = segments[segmentIndex];
+  let { endTime } = initialSegment;
 
-    // get next segment info
-    if (segmentId < segments.length - 1) {
-      const nextSegment = segments[segmentId + 1];
-      if (nextSegment.speakerInfo) {
-        const { id: nextSpeakerId } = nextSegment.speakerInfo;
-        // if it's the same speaker, call this function again but on the next segment
-        if (currentSpeakerId == nextSpeakerId) {
-          return getSpeakerEndTime(segments, segmentId + 1);
-        } else {
-          // if it's a new speaker, return this segment's end time
-          return endTime;
-        }
-      }
+  for (let i = segmentIndex; i < segments.length - 1; i++) {
+    const currentSegment = segments[i];
+    const { id: currentSpeakerId } = currentSegment.speakerInfo;
+    endTime = currentSegment.endTime;
+
+    let nextSegment = segments[i + 1];
+    if (
+      !nextSegment.speakerInfo ||
+      nextSegment.speakerInfo.id !== currentSpeakerId
+    ) {
+      return endTime;
     }
   }
 
-  return null;
+  return endTime;
 }
