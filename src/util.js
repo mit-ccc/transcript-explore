@@ -254,3 +254,29 @@ export function topTermsFromTranscript(transcript, filterStopWords, limit) {
 
   return filteredTerms;
 }
+
+/**
+ * Finds the actual end time for when a speaker stops talking (collapses multiple of the same speaker in a row into one end time)
+ */
+export function getSpeakerEndTime(segments, segmentIndex) {
+  // get the initial segment's speaker ID
+  const initialSegment = segments[segmentIndex];
+  const { speakerInfo: initialSpeakerInfo } = initialSegment;
+
+  if (initialSpeakerInfo) {
+    const { id: initialSpeakerId } = initialSpeakerInfo;
+    // iterate to see how many more segments this speaker speaks for
+    for (let i = segmentIndex; i < segments.length - 1; i++) {
+      const nextSegment = segments[i + 1];
+      // if a new speaker appears, return this segment's end time
+      if (
+        !nextSegment.speakerInfo ||
+        nextSegment.speakerInfo.id !== initialSpeakerId
+      ) {
+        return segments[i].endTime;
+      }
+    }
+  }
+  // if there is no speaker info or it's the last clip, just return this segment's time
+  return initialSegment.endTime;
+}

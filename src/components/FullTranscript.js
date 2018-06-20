@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import cx from 'classnames';
 import { scaleOrdinal } from 'd3';
 
-import { formatTime, renderWord } from '../util';
+import { formatTime, renderWord, getSpeakerEndTime } from '../util';
 
 import './FullTranscript.css';
 
@@ -29,11 +29,13 @@ class FullTranscript extends Component {
 
     return (
       <div className="FullTranscript">
-        {transcript.segments.map((segment, i) => (
+        {transcript.segments.map((segment, i, allSegments) => (
           <TranscriptSegment
             key={i}
             segment={segment}
             onSelectWord={onSelectWord}
+            previousSegment={allSegments[i - 1]}
+            endTime={getSpeakerEndTime(allSegments, i)}
           />
         ))}
       </div>
@@ -43,43 +45,50 @@ class FullTranscript extends Component {
 
 class TranscriptSegment extends Component {
   render() {
-    const { segment, onSelectWord } = this.props;
+    const { segment, onSelectWord, previousSegment, endTime } = this.props;
     const { speakerInfo } = segment;
+
+    let isPrevSpeaker = false;
     let color;
     if (speakerInfo) {
+      isPrevSpeaker =
+        previousSegment && previousSegment.speakerInfo.id === speakerInfo.id;
       color =
         speakerInfo.gender === 'M'
           ? maleColorScale(speakerInfo.id)
           : femaleColorScale(speakerInfo.id);
     }
+    const showSpeaker = !isPrevSpeaker && speakerInfo;
 
     return (
       <div className="TranscriptSegment">
         <div className="segment-header">
-          {speakerInfo && (
-            <span
-              className={cx('segment-speaker-avatar', {
-                'male-speaker': speakerInfo.gender === 'M',
-                'female-speaker': speakerInfo.gender === 'F',
-              })}
-              style={{ backgroundColor: color }}
-            >
-              S{speakerInfo.id}
+          {showSpeaker && (
+            <React.Fragment>
+              <span
+                className={cx('segment-speaker-avatar', {
+                  'male-speaker': speakerInfo.gender === 'M',
+                  'female-speaker': speakerInfo.gender === 'F',
+                })}
+                style={{ backgroundColor: color }}
+              >
+                S{speakerInfo.id}
+              </span>
+              <span
+                className={cx('segment-speaker', {
+                  'male-speaker': speakerInfo.gender === 'M',
+                  'female-speaker': speakerInfo.gender === 'F',
+                })}
+              >
+                Speaker {speakerInfo.id}
+              </span>
+            </React.Fragment>
+          )}
+          {!isPrevSpeaker && (
+            <span className="segment-time">
+              {formatTime(segment.time)}–{formatTime(endTime)}
             </span>
           )}
-          {speakerInfo && (
-            <span
-              className={cx('segment-speaker', {
-                'male-speaker': speakerInfo.gender === 'M',
-                'female-speaker': speakerInfo.gender === 'F',
-              })}
-            >
-              Speaker {speakerInfo.id}
-            </span>
-          )}
-          <span className="segment-time">
-            {formatTime(segment.time)}–{formatTime(segment.endTime)}
-          </span>
         </div>
         {segment.words.map((word, i) => [
           <React.Fragment key={i}>
