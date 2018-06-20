@@ -27,7 +27,7 @@
     "watch-css": "npm run build-css && node-sass-chokidar --include-path ./src --include-path ./node_modules src/ -o src/ --watch --recursive",
     "start-js": "react-scripts start",
     "prettier": "prettier --single-quote --trailing-comma \"es5\" --write \"src/**/*.{js,jsx}\"",
-    "update-word-data": "cp ../../cortico/doug-experiments/talkradio/data/*.tsv public/data/",
+    "update-word-data": "(cd ../../cortico/doug-experiments && git pull); cp ../../cortico/doug-experiments/talkradio/data/*.tsv public/data/",
     "deploy-prototype": "rsync -ruvz --delete build/ prototypes:/lsm/cortico-prototypes/transcript-explore/",
     "deploy": "npm-run-all update-word-data deploy-prototype"
   },
