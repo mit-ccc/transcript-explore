@@ -48,7 +48,6 @@ class TranscriptSegment extends Component {
     const { segment, onSelectWord, previousSegment, endTime } = this.props;
     const { speakerInfo } = segment;
 
-    let showSpeaker = false;
     let isPrevSpeaker = false;
     let color;
     if (speakerInfo) {
@@ -59,7 +58,7 @@ class TranscriptSegment extends Component {
           ? maleColorScale(speakerInfo.id)
           : femaleColorScale(speakerInfo.id);
     }
-    showSpeaker = !isPrevSpeaker && speakerInfo;
+    const showSpeaker = !isPrevSpeaker && speakerInfo;
 
     return (
       <div className="TranscriptSegment">
