@@ -22,6 +22,9 @@ export function renderWord(word) {
 function normalizeWordsFromTsv(tsv) {
   const words = d3.tsvParseRows(tsv, (d, i) => ({
     string: d[0],
+    normalizedString: d[0]
+      .replace(/([^A-Za-z0-9@_\-#'" ])+/g, '')
+      .toLowerCase(),
     time: +d[1],
     endTime: +d[2],
     stopword: stopwordMap[d[0].toLowerCase()] != null,
@@ -36,6 +39,9 @@ function normalizeWordsFromTsv(tsv) {
 function normalizeWordsFromJson(json) {
   const words = json.words.map(word => ({
     string: word[0],
+    normalizedString: word[0]
+      .replace(/([^A-Za-z0-9@_\-#'" ])+/g, '')
+      .toLowerCase(),
     time: word[1],
     endTime: word[2],
     stopWord: stopwordMap[word[0].toLowerCase()] != null,
@@ -215,13 +221,27 @@ export function formatTime(time) {
  * Takes a transcript and produces the top terms with links to all occurrences
  */
 export function topTermsFromTranscript(transcript, filterStopWords, limit) {
+  console.log('got transcript =', transcript);
+  let wordsToUse = transcript.words;
+
+  // filter out stop words if required
+  if (filterStopWords) {
+    wordsToUse = wordsToUse.filter(
+      d =>
+        !d.stopword &&
+        d.string.length > 2 &&
+        d.string !== '<unk>' &&
+        d.string !== '[noise]'
+    );
+  }
+
   const terms = d3
     .nest()
-    .key(d => d.string)
-    .entries(transcript.words);
+    .key(d => d.normalizedString)
+    .entries(wordsToUse);
   // .sort((a, b) => b.values.length - a.values.length);
 
-  // mark as stopwords, compute using unigramcount
+  // mark as stopwords, compute freq scoreusing unigramcount
   terms.forEach(term => {
     term.stopword = term.values[0].stopword;
     term.unigramCount =
@@ -251,6 +271,17 @@ export function topTermsFromTranscript(transcript, filterStopWords, limit) {
 
   // re-sort by frequency
   filteredTerms.sort((a, b) => b.values.length - a.values.length);
+
+  // remove punctuation from keys
+  filteredTerms.forEach(term => {
+    // use first value to try and maintain capitalization
+    if (term.values[0].string.includes('._')) {
+      // handle initialisms specially
+      term.key = term.values[0].string.replace(/[\\._]+/g, '').toUpperCase();
+    } else {
+      term.key = term.values[0].string.replace(/([^A-Za-z0-9@_\-#'" ])+/g, '');
+    }
+  });
 
   return filteredTerms;
 }

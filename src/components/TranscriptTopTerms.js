@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import * as d3 from 'd3';
+import { Popover, PopoverBody } from 'reactstrap';
+import shortid from 'shortid';
 
 import { topTermsFromTranscript, formatTime, renderWord } from '../util';
 
@@ -37,16 +39,11 @@ class TopTerm extends Component {
   state = {
     timesVisible: false,
   };
+  id = shortid.generate();
 
-  handleMouseEnter = () => {
+  handleToggleConcordance = () => {
     this.setState({
-      timesVisible: true,
-    });
-  };
-
-  handleMouseLeave = () => {
-    this.setState({
-      timesVisible: false,
+      timesVisible: !this.state.timesVisible,
     });
   };
 
@@ -59,25 +56,35 @@ class TopTerm extends Component {
     }
 
     return (
-      <div className="term-timestamps">
-        {term.values.map((word, i) => {
-          const time = formatTime(word.time);
-          return (
-            <span
-              key={i}
-              className="term-timestamp"
-              onClick={() => onSeekTime(word.time)}
-            >
-              <span className="timestamp-time">{time}</span>
-              <span className="timestamp-preview">
-                {word.concordance.before.join(' ') + ' '}
-                <b>{renderWord(word)}</b>
-                {' ' + word.concordance.after.join(' ')}
-              </span>
-            </span>
-          );
-        })}
-      </div>
+      <Popover
+        className="TopTermPopover"
+        placement="bottom"
+        isOpen={timesVisible}
+        target={`popover-${this.id}`}
+        toggle={this.handleToggleConcordance}
+      >
+        <PopoverBody>
+          <div className="term-timestamps">
+            {term.values.map((word, i) => {
+              const time = formatTime(word.time);
+              return (
+                <span
+                  key={i}
+                  className="term-timestamp"
+                  onClick={() => onSeekTime(word.time)}
+                >
+                  <span className="timestamp-time">{time}</span>
+                  <span className="timestamp-preview">
+                    {word.concordance.before.join(' ') + ' '}
+                    <b>{renderWord(word)}</b>
+                    {' ' + word.concordance.after.join(' ')}
+                  </span>
+                </span>
+              );
+            })}
+          </div>
+        </PopoverBody>
+      </Popover>
     );
   }
 
@@ -90,10 +97,14 @@ class TopTerm extends Component {
       .clamp(true);
     return (
       <div className="term-timeplot">
-        {term.values.map((word, i) => {
-          const style = { left: `${scale(word.time)}%` };
-          return <div key={i} className="term-timeplot-point" style={style} />;
-        })}
+        <div className="term-timeplot-inner">
+          {term.values.map((word, i) => {
+            const style = { left: `${scale(word.time)}%` };
+            return (
+              <div key={i} className="term-timeplot-point" style={style} />
+            );
+          })}
+        </div>
       </div>
     );
   }
@@ -104,10 +115,10 @@ class TopTerm extends Component {
     return (
       <span
         className="TopTerm"
-        onMouseEnter={this.handleMouseEnter}
-        onMouseLeave={this.handleMouseLeave}
+        onClick={this.handleToggleConcordance}
+        id={`popover-${this.id}`}
       >
-        <span className="term-string">{renderWord(term.values[0])}</span>
+        <span className="term-string">{renderWord({ string: term.key })}</span>
         <span className="term-freq">{term.values.length}</span>
         {this.renderTimePlot()}
         {this.renderTimestamps()}

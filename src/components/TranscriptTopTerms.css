@@ -3,13 +3,15 @@
 .TranscriptTopTerms .TopTerm {
   display: inline-block;
   padding: 0.3em 0.6em;
-  background: #e9ecef;
+  background: #fff;
   margin-right: 4px;
   margin-bottom: 4px;
   position: relative;
-  cursor: default; }
+  cursor: pointer;
+  border-radius: 2px;
+  border: 1px solid #dee2e6; }
   .TranscriptTopTerms .TopTerm:hover {
-    background: #dee2e6; }
+    background: #f8f9fa; }
     .TranscriptTopTerms .TopTerm:hover .term-timeplot {
       z-index: 3; }
   .TranscriptTopTerms .TopTerm .term-freq {
@@ -20,39 +22,42 @@
     content: ' '; }
   .TranscriptTopTerms .TopTerm .term-timeplot {
     line-height: 0;
-    height: 5px;
-    background: rgba(0, 0, 0, 0.04);
+    height: 6px;
+    background: #f8f9fa;
+    border-top: 1px solid #e9ecef;
     position: absolute;
     left: 0;
     right: 0;
     bottom: 0;
     z-index: 1; }
+    .TranscriptTopTerms .TopTerm .term-timeplot .term-timeplot-inner {
+      margin-right: 3px;
+      position: relative; }
     .TranscriptTopTerms .TopTerm .term-timeplot .term-timeplot-point {
       position: absolute;
-      top: 0px;
-      height: 5px;
-      width: 2px;
-      background: rgba(0, 0, 0, 0.2); }
-  .TranscriptTopTerms .TopTerm .term-timestamps {
-    font-size: 0.85em;
-    position: absolute;
-    background: #dee2e6;
-    left: 0;
-    padding: 0.3em 0.6em;
-    z-index: 2;
+      top: 1px;
+      left: 0;
+      height: 3px;
+      width: 3px;
+      border-radius: 2px;
+      background: rgba(0, 123, 255, 0.8); }
+
+.TopTermPopover.popover {
+  max-width: none; }
+  .TopTermPopover.popover .term-timestamps {
     white-space: nowrap; }
-    .TranscriptTopTerms .TopTerm .term-timestamps .term-timestamp {
+    .TopTermPopover.popover .term-timestamps .term-timestamp {
       padding: 0.2em 0.4em;
       margin-right: 2px;
       color: #007bff;
       cursor: pointer;
       display: block; }
-      .TranscriptTopTerms .TopTerm .term-timestamps .term-timestamp:hover .timestamp-time {
+      .TopTermPopover.popover .term-timestamps .term-timestamp:hover .timestamp-time {
         text-decoration: underline; }
-      .TranscriptTopTerms .TopTerm .term-timestamps .term-timestamp .timestamp-time {
+      .TopTermPopover.popover .term-timestamps .term-timestamp .timestamp-time {
         display: inline-block;
         min-width: 40px;
         text-align: right; }
-      .TranscriptTopTerms .TopTerm .term-timestamps .term-timestamp .timestamp-preview {
+      .TopTermPopover.popover .term-timestamps .term-timestamp .timestamp-preview {
         margin-left: 1em;
         color: #000; }
