@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Button, Container, Row, Col } from 'reactstrap';
-import ReactAudioPlayer from 'react-audio-player';
+import { Icon } from 'react-fa';
 import { Navbar, NavbarBrand, Nav, NavItem } from 'reactstrap';
 import { addUrlProps, UrlQueryParamTypes } from 'react-url-query';
 
@@ -9,6 +9,9 @@ import FullTranscript from '../FullTranscript';
 import TranscriptTopTerms from '../TranscriptTopTerms';
 import TranscriptFileSelector from '../TranscriptFileSelector';
 import SoundFileSelector from '../SoundFileSelector';
+//import {FixedAudioPlayer} from '../FixedAudioPlayer/FixedAudioPlayer';
+
+import ReactHowler from 'react-howler'
 
 import './MainPage.css';
 
@@ -20,10 +23,14 @@ const urlPropsQueryConfig = {
   startTimestamp: { type: UrlQueryParamTypes.number, queryParam: 't' },
 };
 
+const AUDIO_FORMATS = ['aac', 'webm', 'mp3'];
+
+
 class MainPage extends Component {
   state = {
     transcript: null,
     audioUrl: null,
+    playing: false,
   };
 
   componentWillMount() {
@@ -135,17 +142,17 @@ class MainPage extends Component {
    * Jump to and play a particular part of the sound
    */
   handleSeekAudio = seconds => {
-    if (this.audioPlayer && this.audioPlayer.audioEl) {
-      this.audioPlayer.audioEl.play();
-      this.audioPlayer.audioEl.currentTime = seconds;
-    }
+    this.audioPlayer.seek(seconds)
+    this.setState({
+      playing: true 
+    });
   };
 
   handleShortRewind = () => {
     const rewindAmount = 5;
     const time = Math.max(
       0,
-      this.audioPlayer.audioEl.currentTime - rewindAmount
+      this.audioPlayer.seek() - rewindAmount,      
     );
     this.handleSeekAudio(time);
   };
@@ -206,8 +213,15 @@ class MainPage extends Component {
     );
   }
 
+  handleTogglePlaying = () => {
+    this.setState({
+      playing: !this.state.playing,
+    });
+  };
+
   renderSoundPlayer() {
     const { audioUrl } = this.state;
+    const { playing } = this.state;
 
     return (
       <div className="sound-player-container">
@@ -223,11 +237,19 @@ class MainPage extends Component {
             >
               Rewind 5s
             </Button>
-            <ReactAudioPlayer
+            <Button className="play-pause-btn" onClick={this.handleTogglePlaying}>
+              {playing ? <Icon name="pause" /> : <Icon name="play" />}
+            </Button> 
+            <progress id="progress_bar" value="0.0" max="1.0" ></progress>
+
+            { <ReactHowler
               src={audioUrl}
-              controls
+              controls 
+              format={AUDIO_FORMATS}
+              playing={playing}
               ref={node => (this.audioPlayer = node)}
             />
+            }
           </div>
         )}
       </div>
@@ -276,7 +298,9 @@ class MainPage extends Component {
           {this.renderTopTerms()}
           {this.renderTranscript()}
         </Container>
+        {/* <FixedAudioPlayer /> */}
       </div>
+
     );
   }
 }
