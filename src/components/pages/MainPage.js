@@ -204,12 +204,6 @@ class MainPage extends Component {
     );
   }
 
-  handleTogglePlaying = () => {
-    this.setState({
-      playing: !this.state.playing,
-    });
-  };
-
   renderSoundPlayer() {
     const { audioUrl, playing } = this.state;
 
@@ -280,7 +274,6 @@ class MainPage extends Component {
           {this.renderTopTerms()}
           {this.renderTranscript()}
         </Container>
-        {/* <FixedAudioPlayer /> */}
       </div>
     );
   }
