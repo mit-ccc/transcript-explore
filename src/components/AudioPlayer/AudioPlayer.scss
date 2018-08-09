@@ -1,0 +1,95 @@
+@import 'assets/util.scss';
+
+.AudioPlayer {
+  $bar-height: 2px;
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  width: 300px;
+  font-size: 12px;
+  display: inline-flex;
+  white-space: nowrap;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 4px;
+
+  .play-pause-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 24px;
+    outline: none;
+    height: 18px;
+    padding: 0 8px;
+    color: #fff;
+  }
+
+  .play-status-bar {
+    flex: 1;
+    display: flex;
+    white-space: nowrap;
+    align-items: center;
+  }
+  
+  .duration-bar,
+  .seek-bar {
+    height: $bar-height;
+    border-radius: 2px;
+  }
+
+  .seek-control {
+    background: $blue;
+    height: 12px;
+    width: 3px;
+    border-radius: 2px;
+    position: absolute;
+    top: -5px;
+    display: none;
+  }
+
+  &.loaded .seek-control {
+    display: block;
+  }
+
+  .duration-time,
+  .seek-time {
+    width: 3em;
+  }
+
+  .seek-time {
+    text-align: right;
+  }
+
+  .duration-time {
+    text-align: left;
+  }
+
+  .interaction-bar {
+    flex: 1;
+    padding: 8px 12px;
+    // background: $gray-700;
+  }
+
+  .duration-bar {
+    background-color: $gray-400;
+    position: relative; // for seek-control
+    transition: .3s background-color;
+  }
+
+  &.loading .duration-bar {
+    background-color: $gray-600;
+  }
+
+  .seek-bar {
+    background-color: $blue;
+  }
+
+  .LoadingSpinner {
+    &:before, &:after {
+      border-width: 2px;
+    }
+
+    &:before {
+      border-color: $blue;
+    }
+  }
+}

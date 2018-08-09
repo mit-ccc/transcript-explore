@@ -1,0 +1,62 @@
+/* Simple file to include in component SCSS to get access to
+ * variables and mixins */
+.AudioPlayer {
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  width: 300px;
+  font-size: 12px;
+  display: inline-flex;
+  white-space: nowrap;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 4px; }
+  .AudioPlayer .play-pause-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 24px;
+    outline: none;
+    height: 18px;
+    padding: 0 8px;
+    color: #fff; }
+  .AudioPlayer .play-status-bar {
+    flex: 1;
+    display: flex;
+    white-space: nowrap;
+    align-items: center; }
+  .AudioPlayer .duration-bar,
+  .AudioPlayer .seek-bar {
+    height: 2px;
+    border-radius: 2px; }
+  .AudioPlayer .seek-control {
+    background: #007bff;
+    height: 12px;
+    width: 3px;
+    border-radius: 2px;
+    position: absolute;
+    top: -5px;
+    display: none; }
+  .AudioPlayer.loaded .seek-control {
+    display: block; }
+  .AudioPlayer .duration-time,
+  .AudioPlayer .seek-time {
+    width: 3em; }
+  .AudioPlayer .seek-time {
+    text-align: right; }
+  .AudioPlayer .duration-time {
+    text-align: left; }
+  .AudioPlayer .interaction-bar {
+    flex: 1;
+    padding: 8px 12px; }
+  .AudioPlayer .duration-bar {
+    background-color: #ced4da;
+    position: relative;
+    transition: .3s background-color; }
+  .AudioPlayer.loading .duration-bar {
+    background-color: #868e96; }
+  .AudioPlayer .seek-bar {
+    background-color: #007bff; }
+  .AudioPlayer .LoadingSpinner:before, .AudioPlayer .LoadingSpinner:after {
+    border-width: 2px; }
+  .AudioPlayer .LoadingSpinner:before {
+    border-color: #007bff; }

@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Button, Container, Row, Col } from 'reactstrap';
-import ReactAudioPlayer from 'react-audio-player';
 import { Navbar, NavbarBrand, Nav, NavItem } from 'reactstrap';
 import { addUrlProps, UrlQueryParamTypes } from 'react-url-query';
 
@@ -9,6 +8,7 @@ import FullTranscript from '../FullTranscript';
 import TranscriptTopTerms from '../TranscriptTopTerms';
 import TranscriptFileSelector from '../TranscriptFileSelector';
 import SoundFileSelector from '../SoundFileSelector';
+import AudioPlayer from '../AudioPlayer/AudioPlayer';
 
 import './MainPage.css';
 
@@ -24,6 +24,7 @@ class MainPage extends Component {
   state = {
     transcript: null,
     audioUrl: null,
+    playing: false,
   };
 
   componentWillMount() {
@@ -135,18 +136,15 @@ class MainPage extends Component {
    * Jump to and play a particular part of the sound
    */
   handleSeekAudio = seconds => {
-    if (this.audioPlayer && this.audioPlayer.audioEl) {
-      this.audioPlayer.audioEl.play();
-      this.audioPlayer.audioEl.currentTime = seconds;
-    }
+    this.audioPlayer.player.seek(seconds);
+    this.setState({
+      playing: true,
+    });
   };
 
   handleShortRewind = () => {
     const rewindAmount = 5;
-    const time = Math.max(
-      0,
-      this.audioPlayer.audioEl.currentTime - rewindAmount
-    );
+    const time = Math.max(0, this.audioPlayer.player.seek() - rewindAmount);
     this.handleSeekAudio(time);
   };
 
@@ -207,7 +205,7 @@ class MainPage extends Component {
   }
 
   renderSoundPlayer() {
-    const { audioUrl } = this.state;
+    const { audioUrl, playing } = this.state;
 
     return (
       <div className="sound-player-container">
@@ -218,14 +216,14 @@ class MainPage extends Component {
           <div>
             <Button
               size="sm align-top"
-              className="mr-1"
+              className="mr-2"
               onClick={this.handleShortRewind}
             >
               Rewind 5s
             </Button>
-            <ReactAudioPlayer
+            <AudioPlayer
               src={audioUrl}
-              controls
+              playing={playing}
               ref={node => (this.audioPlayer = node)}
             />
           </div>
