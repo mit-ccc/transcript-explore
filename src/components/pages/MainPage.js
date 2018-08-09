@@ -20,8 +20,6 @@ const urlPropsQueryConfig = {
   startTimestamp: { type: UrlQueryParamTypes.number, queryParam: 't' },
 };
 
-const AUDIO_FORMATS = ['aac', 'webm', 'mp3'];
-
 class MainPage extends Component {
   state = {
     transcript: null,
@@ -213,8 +211,7 @@ class MainPage extends Component {
   };
 
   renderSoundPlayer() {
-    const { audioUrl } = this.state;
-    const { playing } = this.state;
+    const { audioUrl, playing } = this.state;
 
     return (
       <div className="sound-player-container">
