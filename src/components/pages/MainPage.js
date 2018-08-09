@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Button, Container, Row, Col } from 'reactstrap';
-import { Icon } from 'react-fa';
 import { Navbar, NavbarBrand, Nav, NavItem } from 'reactstrap';
 import { addUrlProps, UrlQueryParamTypes } from 'react-url-query';
 
@@ -9,9 +8,7 @@ import FullTranscript from '../FullTranscript';
 import TranscriptTopTerms from '../TranscriptTopTerms';
 import TranscriptFileSelector from '../TranscriptFileSelector';
 import SoundFileSelector from '../SoundFileSelector';
-//import {FixedAudioPlayer} from '../FixedAudioPlayer/FixedAudioPlayer';
-
-import ReactHowler from 'react-howler'
+import AudioPlayer from '../AudioPlayer/AudioPlayer';
 
 import './MainPage.css';
 
@@ -24,7 +21,6 @@ const urlPropsQueryConfig = {
 };
 
 const AUDIO_FORMATS = ['aac', 'webm', 'mp3'];
-
 
 class MainPage extends Component {
   state = {
@@ -142,18 +138,15 @@ class MainPage extends Component {
    * Jump to and play a particular part of the sound
    */
   handleSeekAudio = seconds => {
-    this.audioPlayer.seek(seconds)
+    this.audioPlayer.player.seek(seconds);
     this.setState({
-      playing: true 
+      playing: true,
     });
   };
 
   handleShortRewind = () => {
     const rewindAmount = 5;
-    const time = Math.max(
-      0,
-      this.audioPlayer.seek() - rewindAmount,      
-    );
+    const time = Math.max(0, this.audioPlayer.player.seek() - rewindAmount);
     this.handleSeekAudio(time);
   };
 
@@ -232,24 +225,16 @@ class MainPage extends Component {
           <div>
             <Button
               size="sm align-top"
-              className="mr-1"
+              className="mr-2"
               onClick={this.handleShortRewind}
             >
               Rewind 5s
             </Button>
-            <Button className="play-pause-btn" onClick={this.handleTogglePlaying}>
-              {playing ? <Icon name="pause" /> : <Icon name="play" />}
-            </Button> 
-            <progress id="progress_bar" value="0.0" max="1.0" ></progress>
-
-            { <ReactHowler
+            <AudioPlayer
               src={audioUrl}
-              controls 
-              format={AUDIO_FORMATS}
               playing={playing}
               ref={node => (this.audioPlayer = node)}
             />
-            }
           </div>
         )}
       </div>
@@ -300,7 +285,6 @@ class MainPage extends Component {
         </Container>
         {/* <FixedAudioPlayer /> */}
       </div>
-
     );
   }
 }
