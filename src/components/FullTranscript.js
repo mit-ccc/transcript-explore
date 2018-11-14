@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import cx from 'classnames';
-import { scaleOrdinal } from 'd3';
+import { scaleOrdinal, scaleLinear } from 'd3';
 
 import { formatTime, renderWord, getSpeakerEndTime } from '../util';
 
@@ -101,14 +101,29 @@ class TranscriptSegment extends Component {
 }
 
 class TranscriptWord extends Component {
+  static defaultProps = {
+    showConfidence: true,
+  };
   handleClick = () => {
     this.props.onClick(this.props.word);
   };
 
   render() {
-    const { word } = this.props;
+    const { word, showConfidence } = this.props;
+    const opacity = showConfidence
+      ? scaleLinear()
+          .domain([0.6, 1.0])
+          .range([0.6, 1.0])
+          .clamp(true)(word.confidence)
+      : 1;
+
     return (
-      <span className="TranscriptWord" onClick={this.handleClick}>
+      <span
+        title={`Confidence: ${word.confidence}`}
+        className={cx('TranscriptWord')}
+        onClick={this.handleClick}
+        style={{ opacity }}
+      >
         {renderWord(word)}
       </span>
     );

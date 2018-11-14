@@ -34,7 +34,7 @@ function normalizeWordsFromTsv(tsv) {
 }
 
 /**
- * Convert words from JSON format [word, start, end] to normalized JSON format
+ * Convert words from JSON format [word, start, end, confidence] to normalized JSON format
  */
 function normalizeWordsFromJson(json) {
   const words = json.words.map(word => ({
@@ -44,6 +44,7 @@ function normalizeWordsFromJson(json) {
       .toLowerCase(),
     time: word[1],
     endTime: word[2],
+    confidence: word[3],
     stopWord: stopwordMap[word[0].toLowerCase()] != null,
   }));
   return words;
