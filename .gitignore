@@ -23,3 +23,6 @@ yarn-error.log*
 # data from doug
 unigram_counts.tsv
 word_denorm.tsv
+
+# emacs!
+*~
